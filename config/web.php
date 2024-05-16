@@ -32,13 +32,6 @@ $config = [
             'class' => 'yii\web\Response',
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-                if ($response->statusCode == 404) {
-                    return $response->data = [
-                        "code" => 404,
-                        "message" => "Not Found"
-                    ];
-                }
-
                 if ($response->statusCode == 401) {
                     if (Yii::$app->user->isGuest) {
                         return $response->data = [
@@ -61,7 +54,7 @@ $config = [
             'enableSession' => false,
         ],
         'errorHandler' => [
-            // 'errorAction' => 'site/error',
+            'errorAction' => 'site/error',
         ],
         'mailer' => [
             'class' => \yii\symfonymailer\Mailer::class,
@@ -94,15 +87,35 @@ $config = [
                 'OPTIONS <prefix:.*>/logout' => 'user/options',
                 'GET <prefix:.*>/logout' => 'user/logout',
 
-                // [
-                //     'pluralize' => false,
-                //     'prefix' => 'api',
-                //     'class' => 'yii\rest\UrlRule',
-                //     'controller' => ['meet' => 'meeting'],
-                //     'extraPatterns' => [
+                [
+                    'pluralize' => true,
+                    'prefix' => '<prefix:.*>',
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => 'file',
+                    'extraPatterns' => [
+                        'OPTIONS /' => 'upload-files',
+                        'POST /' => 'upload-files',
                         
-                //     ],
-                // ],
+                        'OPTIONS <file_id>' => 'edit-file',
+                        'POST <file_id>' => 'edit-file',
+
+                        'OPTIONS <file_id>' => 'delete-file',
+                        'DELETE <file_id>' => 'delete-file',
+
+                        'GET disk' => 'get-files',
+
+                        'GET shared' => 'get-shared-files',
+
+                        'GET <file_id>' => 'download-file',
+
+                        'OPTIONS <file_id>/accesses' => 'add-access',
+                        'POST <file_id>/accesses' => 'add-access',
+
+                        'OPTIONS <file_id>/accesses' => 'delete-access',
+                        'DELETE <file_id>/accesses' => 'delete-access',
+
+                    ],
+                ],
             ],
         ]
     ],

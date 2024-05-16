@@ -38,13 +38,13 @@ class Users extends ActiveRecord implements IdentityInterface
         return [
             [['email', 'password'], 'required'],
             [['first_name', 'last_name', 'email', 'password', 'token'], 'string', 'max' => 255],
+            ['first_name', 'string', 'min' => 3],
             ['token', 'unique'],
             ['email', 'email'],
 
             [['first_name', 'last_name'], 'required', 'on' => static::SCENARIO_REGISTER],
             ['email', 'unique', 'on' => static::SCENARIO_REGISTER],
             [['password'], 'match', 'pattern' => '/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])[A-Za-z0-9]{3,}$/u', 'on' => static::SCENARIO_REGISTER],
-            ['first_name', 'string', 'min' => 3],
         ];
     }
 

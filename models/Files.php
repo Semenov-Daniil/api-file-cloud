@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property string $title
+ * @property string $extension
  * @property string $file_id
  * @property string $url
  *
@@ -16,29 +17,10 @@ use Yii;
  */
 class Files extends \yii\db\ActiveRecord
 {
-    // const SCENARIO_UPLOAD = 'upload';
-    // const SCENARIO_SAVE = 'save';
+    const SCENARIO_EDIT = 'edit';
 
     public $file;
-
-    public static function saveFile()
-    {
-        $dir = Yii::getAlias('@app/web/uploads/');
-
-        $model = new Files();
-        // $model->title = $filename;
-
-        $model->file_id = Yii::$app->security->generateRandomString();
-        while(!$model->validate()) {
-            $model->file_id = Yii::$app->security->generateRandomString();
-        }
-
-        $model->url = Yii::$app->security->generateRandomString();
-
-        $model->save(false);
-
-        return $model;
-    }
+    public $name;
 
     /**
      * {@inheritdoc}
@@ -54,11 +36,30 @@ class Files extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'file_id', 'url'], 'string', 'max' => 255],
+            [['title', 'extension', 'file_id', 'url'], 'string', 'max' => 255],
             ['file_id', 'unique'],
 
             ['file', 'file', 'extensions' => 'doc, pdf, docx, zip, jpeg, jpg, png', 'maxSize' => 2*1024*1024],
+
+            ['name', 'string', 'max' => 255, 'on' => static::SCENARIO_EDIT],
+            ['name', 'required', 'on' => static::SCENARIO_EDIT],
+            ['name', 'uniqueForUser', 'on' => static::SCENARIO_EDIT],
         ];
+    }
+
+    public function uniqueForUser($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+            $existingRecord = Accesses::find()
+                ->innerJoin(Files::tableName(), 'fc_files.id = fc_accesses.files_id')
+                ->innerJoin(Roles::tableName(), 'fc_roles.id = fc_accesses.roles_id')
+                ->where(['fc_accesses.users_id' => Yii::$app->user->identity->id, 'fc_roles.title' => 'author', 'fc_files.title' => $this->$attribute])
+                ->one();
+
+            if ($existingRecord !== null) {
+                $this->addError($attribute, 'This value already exists for this user.');
+            }
+        }
     }
 
     /**
@@ -69,6 +70,7 @@ class Files extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
+            'extension' => 'extension',
             'file_id' => 'File ID',
             'url' => 'Url',
         ];
