@@ -111,12 +111,12 @@ class FileController extends ActiveController
 
         $fileCount = Accesses::find()
             ->select([
-                'fc_files.title'
+                '{{%files}}.title'
             ])
-            ->innerJoin(Files::tableName(), 'fc_files.id = fc_accesses.files_id')
-            ->innerJoin(Roles::tableName(), 'fc_roles.id = fc_accesses.roles_id')
-            ->where(['fc_accesses.users_id' => $user_id, 'fc_files.extension' => $file->extension, 'fc_roles.title' => 'author'])
-            ->andWhere(['regexp', 'fc_files.title', $file->baseName . '(\s*\(\d+\))?'])
+            ->innerJoin(Files::tableName(), '{{%files}}.id = {{%accesses}}.files_id')
+            ->innerJoin(Roles::tableName(), '{{%roles}}.id = {{%accesses}}.roles_id')
+            ->where(['{{%accesses}}.users_id' => $user_id, '{{%files}}.extension' => $file->extension, '{{%roles}}.title' => 'author'])
+            ->andWhere(['regexp', '{{%files}}.title', $file->baseName . '(\s*\(\d+\))?'])
             ->count();
 
         if ($fileCount) {
@@ -286,9 +286,9 @@ class FileController extends ActiveController
                         }
     
                         $all_user = Accesses::find()
-                            ->select(['first_name', 'last_name', 'email', 'fc_roles.title as type'])
-                            ->innerJoin('fc_users', 'fc_users.id = fc_accesses.users_id')
-                            ->innerJoin('fc_roles', 'fc_roles.id = fc_accesses.roles_id')
+                            ->select(['first_name', 'last_name', 'email', '{{%roles}}.title as type'])
+                            ->innerJoin('{{%users}}', '{{%users}}.id = {{%accesses}}.users_id')
+                            ->innerJoin('{{%roles}}', '{{%roles}}.id = {{%accesses}}.roles_id')
                             ->where(['files_id' => $file->id])
                             ->asArray()
                             ->all();
@@ -358,9 +358,9 @@ class FileController extends ActiveController
                         }
     
                         $all_user = Accesses::find()
-                            ->select(['first_name', 'last_name', 'email', 'fc_roles.title as type'])
-                            ->innerJoin('fc_users', 'fc_users.id = fc_accesses.users_id')
-                            ->innerJoin('fc_roles', 'fc_roles.id = fc_accesses.roles_id')
+                            ->select(['first_name', 'last_name', 'email', '{{%roles}}.title as type'])
+                            ->innerJoin('{{%users}}', '{{%users}}.id = {{%accesses}}.users_id')
+                            ->innerJoin('{{%roles}}', '{{%roles}}.id = {{%accesses}}.roles_id')
                             ->where(['files_id' => $file->id])
                             ->asArray()
                             ->all();
@@ -413,9 +413,9 @@ class FileController extends ActiveController
 
         $files = Accesses::find()
             ->select([
-                'title', 'file_id', 'url', 'fc_files.id'
+                'title', 'file_id', 'url', '{{%files}}.id'
             ])
-            ->innerJoin('fc_files', 'fc_files.id = fc_accesses.files_id')
+            ->innerJoin('{{%files}}', '{{%files}}.id = {{%accesses}}.files_id')
             ->where(['users_id' => $identity->id, 'roles_id' => (Roles::findOne(['title' => 'author']))->id])
             ->asArray()
             ->all();
@@ -423,10 +423,10 @@ class FileController extends ActiveController
         foreach ($files as $file) {
             $accesses = Accesses::find()
                 ->select([
-                    'CONCAT(first_name, " ", last_name) as fullname', 'email', 'fc_roles.title as type'
+                    'CONCAT(first_name, " ", last_name) as fullname', 'email', '{{%roles}}.title as type'
                 ])
-                ->innerJoin('fc_users', 'fc_users.id = fc_accesses.users_id')
-                ->innerJoin('fc_roles', 'fc_roles.id = fc_accesses.roles_id')
+                ->innerJoin('{{%users}}', '{{%users}}.id = {{%accesses}}.users_id')
+                ->innerJoin('{{%roles}}', '{{%roles}}.id = {{%accesses}}.roles_id')
                 ->where(['files_id' => $file['id']])
                 ->asArray()
                 ->all();
@@ -453,7 +453,7 @@ class FileController extends ActiveController
             ->select([
                 'title', 'file_id', 'url'
             ])
-            ->innerJoin('fc_files', 'fc_files.id = fc_accesses.files_id')
+            ->innerJoin('{{%files}}', '{{%files}}.id = {{%accesses}}.files_id')
             ->where(['users_id' => $identity->id, 'roles_id' => (Roles::findOne(['title' => 'co-author']))->id])
             ->asArray()
             ->all();
