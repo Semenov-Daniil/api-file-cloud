@@ -139,7 +139,6 @@ class UserController extends ActiveController
     public function actionLogout()
     {
         $identity = Yii::$app->user->identity;
-
         $user = Users::findOne($identity->id);
         $user->token = null;
         $user->save(false);

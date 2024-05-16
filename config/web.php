@@ -32,7 +32,7 @@ $config = [
             'class' => 'yii\web\Response',
             'on beforeSend' => function ($event) {
                 $response = $event->sender;
-                if ($response->statusCode == 401) {
+                if ($response->data == null && $response->statusCode == 401) {
                     if (Yii::$app->user->isGuest) {
                         return $response->data = [
                             "message" => "Login failed"
@@ -42,6 +42,10 @@ $config = [
                             "message" => "Forbidden for you"
                         ];
                     }
+                } else if ($response->statusCode == 401 && Yii::$app->user->isGuest) {
+                    return $response->data = [
+                        "message" => "Login failed"
+                    ];
                 }
             },
         ],

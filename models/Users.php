@@ -38,7 +38,8 @@ class Users extends ActiveRecord implements IdentityInterface
         return [
             [['email', 'password'], 'required'],
             [['first_name', 'last_name', 'email', 'password', 'token'], 'string', 'max' => 255],
-            ['first_name', 'string', 'min' => 3],
+            [['first_name', 'last_name', 'email', 'password'], 'trim'],
+            ['first_name', 'string', 'min' => 2],
             ['token', 'unique'],
             ['email', 'email'],
 

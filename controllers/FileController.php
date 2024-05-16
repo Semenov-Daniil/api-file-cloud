@@ -107,7 +107,6 @@ class FileController extends ActiveController
     {
         $answer = [];
         $modelFile = new Files();
-        $modelAccesses = new Accesses();
         $filename = $file->baseName;
 
         $fileCount = Accesses::find()
@@ -133,7 +132,7 @@ class FileController extends ActiveController
         $modelFile->url = Yii::$app->request->getHostInfo() . '/api-file/files/' . $modelFile->file_id;
 
         if ($modelFile->save()) {
-
+            $modelAccesses = new Accesses();
             $modelAccesses->users_id = $user_id;
             $modelAccesses->files_id = $modelFile->id;
             $modelAccesses->roles_id = (Roles::findOne(['title' => 'author']))->id;
@@ -160,7 +159,6 @@ class FileController extends ActiveController
             ];
         }
 
-        Yii::$app->response->statusCode = 200;
         return $answer;
     }
 
@@ -283,7 +281,7 @@ class FileController extends ActiveController
                             $modelAccesses = new Accesses();
                             $modelAccesses->users_id = $user->id;
                             $modelAccesses->files_id = $file->id;
-                            $modelAccesses->roles_id = (Roles::findOne(['title' => 'coauthor']))->id;
+                            $modelAccesses->roles_id = (Roles::findOne(['title' => 'co-author']))->id;
                             $modelAccesses->save(false);
                         }
     
@@ -317,7 +315,7 @@ class FileController extends ActiveController
                     $answer = [
                         "success" => false,
                         'code' => 422,
-                        'message' => ["Email cannot be blank."],
+                        'message' => ["email" => ["Email cannot be blank."]],
                     ];
                 }
 
@@ -389,7 +387,7 @@ class FileController extends ActiveController
                     $answer = [
                         "success" => false,
                         'code' => 422,
-                        'message' => ["Email cannot be blank."],
+                        'message' => ["email" => ["Email cannot be blank."]],
                     ];
                 }
 
@@ -415,7 +413,7 @@ class FileController extends ActiveController
 
         $files = Accesses::find()
             ->select([
-                'title', 'file_id', 'url'
+                'title', 'file_id', 'url', 'fc_files.id'
             ])
             ->innerJoin('fc_files', 'fc_files.id = fc_accesses.files_id')
             ->where(['users_id' => $identity->id, 'roles_id' => (Roles::findOne(['title' => 'author']))->id])
@@ -429,6 +427,7 @@ class FileController extends ActiveController
                 ])
                 ->innerJoin('fc_users', 'fc_users.id = fc_accesses.users_id')
                 ->innerJoin('fc_roles', 'fc_roles.id = fc_accesses.roles_id')
+                ->where(['files_id' => $file['id']])
                 ->asArray()
                 ->all();
             
@@ -455,7 +454,7 @@ class FileController extends ActiveController
                 'title', 'file_id', 'url'
             ])
             ->innerJoin('fc_files', 'fc_files.id = fc_accesses.files_id')
-            ->where(['users_id' => $identity->id, 'roles_id' => (Roles::findOne(['title' => 'coauthor']))->id])
+            ->where(['users_id' => $identity->id, 'roles_id' => (Roles::findOne(['title' => 'co-author']))->id])
             ->asArray()
             ->all();
 
