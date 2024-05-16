@@ -43,8 +43,12 @@
         }
     },
     "scripts": {
+        "post-update-cmd": [  
+            "php yii migrate --interactive=0"  
+        ], 
         "post-install-cmd": [
-            "yii\\composer\\Installer::postInstall"
+            "yii\\composer\\Installer::postInstall",
+            "php yii migrate --interactive=0"
         ],
         "post-create-project-cmd": [
             "yii\\composer\\Installer::postCreateProject",
