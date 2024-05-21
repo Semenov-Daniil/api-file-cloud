@@ -255,8 +255,8 @@ class FileController extends ActiveController
                 $path_file = Yii::getAlias('@app/uploads/') . $file->file_id . '.' . $file->extension;
 
                 if (file_exists($path_file)) {
-                    // return Yii::$app->response->sendStreamAsFile(fopen($path_file, 'r'), $file->title);
-                    return Yii::$app->response->sendFile($path_file);
+                    // return Yii::$app->response->sendStreamAsFile(fopen($path_file, 'r'), $file->title)->send();
+                    return Yii::$app->response->sendFile($path_file)->send();
                 } else {
                     Yii::$app->response->statusCode = 404;
                     $answer = [
