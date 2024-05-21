@@ -63,7 +63,7 @@ class UserController extends ActiveController
 
         if (!$model->hasErrors()) {
             $user = Users::findOne(['email' => $model->email]);
-            if ($user->validatePassword($model->password)) {
+            if (!empty($user) && $user->validatePassword($model->password)) {
                 $model = $user;
                 $model->token = Yii::$app->security->generateRandomString();
 
