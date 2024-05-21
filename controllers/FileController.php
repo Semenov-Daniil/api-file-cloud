@@ -252,8 +252,18 @@ class FileController extends ActiveController
         if (!empty($file)) {
             $accesse = Accesses::find()->where(['files_id' => $file->id, 'users_id' => $identity->id])->one();
             if (!empty($accesse)) {
-                // return Yii::$app->response->sendStreamAsFile(fopen(Yii::getAlias('@app/uploads/') . $file->file_id . '.' . $file->extension, 'r'), $file->title);
-                return Yii::$app->response->sendFile(Yii::getAlias('@app/uploads/') . $file->file_id . '.' . $file->extension);
+                $path_file = Yii::getAlias('@app/uploads/') . $file->file_id . '.' . $file->extension;
+
+                if (file_exists($path_file)) {
+                    // return Yii::$app->response->sendStreamAsFile(fopen($path_file, 'r'), $file->title);
+                    return Yii::$app->response->sendFile($path_file);
+                } else {
+                    Yii::$app->response->statusCode = 404;
+                    $answer = [
+                        "message" => "Not found",
+                        "code" => 404
+                    ];
+                }
             } else {
                 Yii::$app->response->statusCode = 401;
                 return false;
