@@ -101,7 +101,7 @@ $config = [
                         'POST /' => 'upload-files',
                         
                         'OPTIONS <file_id>' => 'edit-file',
-                        'POST <file_id>' => 'edit-file',
+                        'PATH <file_id>' => 'edit-file',
 
                         'OPTIONS <file_id>' => 'delete-file',
                         'DELETE <file_id>' => 'delete-file',

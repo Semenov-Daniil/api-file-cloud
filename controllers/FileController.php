@@ -30,7 +30,7 @@ class FileController extends ActiveController
             'cors' => [
                 // restrict access to
                 'Origin' => [(isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : 'http://' . $_SERVER['REMOTE_ADDR'])],
-                'Access-Control-Request-Method' => ['OPTIONS', 'POST', 'GET', 'DELETE'],
+                'Access-Control-Request-Method' => ['OPTIONS', 'POST', 'GET', 'DELETE', 'PATH'],
                 'Access-Control-Request-Headers' => ['content-type', 'Authorization'],
             ],
             'actions' => [
