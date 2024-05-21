@@ -138,6 +138,12 @@ class FileController extends ActiveController
             $modelAccesses->roles_id = (Roles::findOne(['title' => 'author']))->id;
     
             if ($modelAccesses->save()) {
+                $dir = Yii::getAlias('@app/uploads/');
+
+                if (!file_exists($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+
                 if (($file->saveAs(Yii::getAlias('@app/uploads/') . $modelFile->file_id . '.' . $modelFile->extension))) {
                     $answer = [
                         "success" => true,
